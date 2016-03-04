@@ -121,6 +121,7 @@ namespace NovartisTaskManager
                 else // 否则直接copy文件             
                 {
                     string srcfileName = file.Substring(file.LastIndexOf("\\") + 1);
+                    string filename=srcfileName ;
                     srcfileName = realDesDir+ "\\" + srcfileName;
                     if (!Directory.Exists(realDesDir))
                     {
@@ -131,6 +132,7 @@ namespace NovartisTaskManager
                     {
                         File.Copy(file, srcfileName);
                         //dbm.insertData()
+                        dbm.insertTask(filename, file, srcfileName,"");
                     }
                 }
             }//foreach   
@@ -202,6 +204,7 @@ namespace NovartisTaskManager
             if (path == String.Empty)
             {
                 MessageBox.Show("输入非法", "警告");
+                textBox1.Clear();
                 textBox1.Focus();
             }
             else
@@ -216,16 +219,6 @@ namespace NovartisTaskManager
                     if (c2.Exists)
                     {
                         this.copytoTodayFolder(path, copypath);
-
-                        //添加功能，COPY成功后再从COPYPATH文件夹查找所有文件并添加到数据库
-
-                        foreach (FileInfo files in folder.GetFiles())//获取子文件列表
-                        {
-                            
-                            dbm.insertTask(files.Name, files.FullName);//将每一条数据插入到数据库中
-
-                        }
-
                         MessageBox.Show("复制成功,保存路径：" + copypath);
                         this.updateDataGrid();
                     }
@@ -234,6 +227,7 @@ namespace NovartisTaskManager
                 else
                 {
                     MessageBox.Show("公盘路径不存在", "错误");
+                    textBox1.Clear();
                     textBox1.Focus();
                 }
             }
@@ -249,6 +243,21 @@ namespace NovartisTaskManager
         private void panel3_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private void textbox1_keypress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == 13)
+            {
+                this.button1_Click(sender, e);
+            }
+        }
+
+        private void getTasksInfo()
+        {
+            string date = System.DateTime.Now.ToString("yyyy-MM-dd");
+            dbm.findTasksbyDate(date);
+            
         }
     }
 }
